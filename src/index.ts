@@ -1,35 +1,17 @@
-#!/usr/bin/env node
 import yargs from 'yargs';
-import { run } from './run';
+import { handle, options } from './run';
 
-const argv = yargs
+yargs
     .command(
         'run',
         'Run cypress tests',
-        (yargs) => {
-            yargs.option('threads', {
-                description: 'number threads to run tests',
-                alias: 't',
-                type: 'number',
-                default: 1,
-            });
-
-            yargs.option('dir', {
-                description: 'path directory to run tests',
-                alias: 'd',
-                type: 'string',
-            });
-
-            yargs.demandOption(['dir'], 'Please provide dir argument to run tests')
-
-            return yargs;
-        },
+        options,
         // (argv: { threads: number; dir: string }) => {
         (argv: any) => {
-            run({
+            handle({
                 dir: argv.dir,
-                threads: argv.threads,            
-            })
+                threads: argv.threads,
+            });
         }
     )
     // .option('time', {
@@ -38,11 +20,10 @@ const argv = yargs
     //     type: 'boolean',
     // })
     .help()
-    .alias('help', 'h').argv;
+    .alias('help', 'h');
 
-if (argv.time) {
+if (yargs.argv.time) {
     console.log('The current time is: ', new Date().toLocaleTimeString());
 }
 
-
-console.log(argv);
+console.log(yargs.argv);
