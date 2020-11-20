@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { exec } from 'child_process';
+import { spawn } from 'child_process';
 
 interface Attributes {
     threads: number;
@@ -41,47 +41,62 @@ export const handle = (attrs: Attributes) => {
 
     const files = fs.readdirSync(dir);
     const roundedQuotient = Math.floor(files.length / threads);
-    const remainder = files.length % threads;
-    console.log('roundedQuotient', roundedQuotient);
-    console.log('remainder', remainder);
     const cypressCommand = 'node_modules/.bin/cypress run --spec';
     const splitedFiles = files.reduce((acc, cur, index) => {
         const idx = index % roundedQuotient;
         if (Array.isArray(acc[idx])) {
-            acc[idx].push(cur);
+            acc[idx].push(`${dir}/${cur}`);
         } else {
-            acc.push([cur]);
+            acc.push([`${dir}/${cur}`]);
         }
         return acc;
     }, [] as string[][]);
 
     const commands = splitedFiles.map((groupedFiles) => `${cypressCommand} ${groupedFiles.join(',')}`);
+    // eslint-disable-next-line no-console
     console.log(commands);
-    const returned = commands.map((command) => {
+
+    const returned = splitedFiles.map((testFiles) => {
         const promise = new Promise((resolve, reject) => {
-            exec('ls -la', (error, stdout, stderr) => {
-                if (error) {
-                    console.log(`error: ${error.message}`);
-                    reject(error.message);
-                    return;
+            const cypressRun = spawn('node_modules/.bin/cypress', ['run', '--spec'].concat(testFiles.join(',')));
+
+            cypressRun.stdout.on('data', (data) => {
+                // eslint-disable-next-line no-console
+                console.log(`stdout: ${data}`);
+            });
+
+            cypressRun.stderr.on('data', (data) => {
+                // eslint-disable-next-line no-console
+                console.log(`stderr: ${data}`);
+            });
+
+            cypressRun.on('error', (error) => {
+                // eslint-disable-next-line no-console
+                console.log(`error: ${error.message}`);
+            });
+
+            cypressRun.on('close', (code) => {
+                // eslint-disable-next-line no-console
+                console.log(`child process exited with code ${code}`);
+                if (code) {
+                    reject(new Error('test not pass'));
+                } else {
+                    resolve('success!');
                 }
-                if (stderr) {
-                    console.log(`stderr: ${stderr}`);
-                    reject(stderr);
-                    return;
-                }
-                console.log(`stdout: ${stdout}`);
-                console.log(`new line`);
-                resolve(stdout);
             });
         });
 
         return promise;
     });
 
-    Promise.all(returned).then(() => {
-        console.log(returned);
-    });
+    Promise.all(returned)
+        .then(() => {
+            // eslint-disable-next-line no-console
+            console.log('GOOD!');
+        })
+        .catch(() => {
+            throw new Error('BAD!');
+        });
 };
 
 export default handle;

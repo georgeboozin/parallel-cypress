@@ -23,7 +23,9 @@ yargs
     .alias('help', 'h');
 
 if (yargs.argv.time) {
+    // eslint-disable-next-line no-console
     console.log('The current time is: ', new Date().toLocaleTimeString());
 }
 
+// eslint-disable-next-line no-console
 console.log(yargs.argv);
