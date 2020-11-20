@@ -1,0 +1,38 @@
+{
+  "name": "@boozingeorge/parallel-cypress",
+  "version": "0.0.1",
+  "description": "run cypress test",
+  "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
+  "bin": {
+    "parallel-cypress": "lib/index.js"
+  },
+  "scripts": {
+    "dev": "rm -rf lib && tsc --project tsconfig.json --watch",
+    "build": "rm -rf lib && tsc --project tsconfig.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boozingeorge/parallel-cypress.git"
+  },
+  "author": "George Boozin <boozingeorge@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/boozingeorge/parallel-cypress/issues"
+  },
+  "homepage": "https://github.com/boozingeorge/parallel-cypress#readme",
+  "dependencies": {
+    "yargs": "^16.1.1"
+  },
+  "devDependencies": {
+    "@boozingeorge/config": "0.0.1",
+    "@types/node": "^14.14.8",
+    "@types/yargs": "^15.0.10",
+    "eslint": "^7.13.0",
+    "prettier": "^2.1.2",
+    "typescript": "^4.0.5"
+  }
+}
