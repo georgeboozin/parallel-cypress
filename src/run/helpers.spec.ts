@@ -1,5 +1,7 @@
-import { promisify } from 'util';
-import { splitFilesToThreads, enhanceFilePath, execBin } from './helpers';
+import { MySpawn } from './__mocks__/child_process';
+import { splitFilesToThreads, enhanceFilePath, handleChildProcess, execBin, runCypressTests } from './helpers';
+
+jest.mock('child_process');
 
 describe('helpers', () => {
     test('splitFilesToThreads', () => {
@@ -22,14 +24,33 @@ describe('helpers', () => {
         expect(enhancedFiles).toHaveLength(2);
     });
 
-    /* test('enhanceFilePath', async () => {
-        const asyncExecBin = promisify(execBin);
-        const lenght = await asyncExecBin(['1', '2']);
-        expect(lenght).toEqual(2);
+    test('handleChildProcess exit 0', async () => {
         try {
-            const lenght2 = await asyncExecBin(['1', '2', '3']);
-        } catch(e) {
-            expect(e.message).toEqual('ulala');
+            const childProcess = new MySpawn(0);
+            const value = await handleChildProcess(childProcess);
+            expect(value).toEqual('success!');
+        } catch (e) {
+            expect(e.message).toEqual('test not pass');
         }
-    }); */
+    });
+
+    test('handleChildProcess exit 1', async () => {
+        try {
+            const childProcess = new MySpawn(1);
+            await handleChildProcess(childProcess);
+        } catch (e) {
+            expect(e.message).toEqual('test not pass');
+        }
+    });
+
+    test('execBin', async () => {
+        const result = await execBin(['1.js', '2.js'], '/bib/bash');
+        expect(result).toEqual('success!');
+    });
+
+    test('runCypressTests', async () => {
+        const result = await runCypressTests([['1.js', '2.js'],['3.js', '4.js']], '/bin/bash');
+        expect(result).toEqual(['success!', 'success!']);
+
+    });
 });

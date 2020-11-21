@@ -13,6 +13,7 @@
     "dev": "rm -rf lib && tsc --project tsconfig.json --watch",
     "build": "rm -rf lib && tsc --project tsconfig.json",
     "test": "jest",
+    "test:coverage": "jest --collect-coverage",
     "lint": "eslint ./src --quiet --ext .js,.ts,.tsx --config ./.eslintrc.js"
   },
   "repository": {

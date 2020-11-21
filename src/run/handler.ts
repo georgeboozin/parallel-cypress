@@ -1,6 +1,5 @@
 import fs from 'fs';
 import glob from 'glob';
-import { spawn } from 'child_process';
 import { splitFilesToThreads, runCypressTests } from './helpers';
 
 interface Attributes {
@@ -17,25 +16,26 @@ export const handler = (attrs: Attributes) => {
         throw new Error('Incorrect dir path');
     }
 
-    glob(`${dir}/**/*.*`, (err, files) => {
+    glob(`${dir}/**/*.*`, async (err, files) => {
         if (err) {
             throw err;
         }
+
+        // eslint-disable-next-line no-console
         console.log(files);
         const threadsWithFiles = splitFilesToThreads(files, numberThreads);
 
+        // eslint-disable-next-line no-console
         console.log('threadsWithFiles');
+        // eslint-disable-next-line no-console
         console.log(threadsWithFiles);
 
-        const promises = runCypressTests(threadsWithFiles, binPath);
-
-        Promise.all(promises)
-            .then(() => {
-                // eslint-disable-next-line no-console
-                console.log('GOOD!');
-            })
-            .catch(() => {
-                throw new Error('BAD!');
-            });
+        try {
+            await runCypressTests(threadsWithFiles, binPath);
+            // eslint-disable-next-line no-console
+            console.log('GOOD!');
+        } catch (e) {
+            throw new Error('BAD!');
+        }
     });
 };

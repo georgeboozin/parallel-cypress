@@ -8,6 +8,7 @@ yargs
         options,
         // (argv: { threads: number; dir: string }) => {
         (argv: any) => {
+            // eslint-disable-next-line no-console
             console.log(argv);
             handler({
                 dir: argv.dir,

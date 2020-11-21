@@ -14,26 +14,25 @@ export const splitFilesToThreads = (files: string[], numberThreads: number) =>
 
 export const enhanceFilePath = (files: string[], dir: string) => files.map((file: string) => `${dir}/${file}`);
 
-export const execBinSync = (files: string[], binPath: string, callback: (err, result?: string) => void) => {
-    const arg = files.join(',');
-    const cypressRun = spawn(binPath, ['run', '--spec'].concat(arg));
+export const createChildProcess = (binPath, arg) => spawn(binPath, ['run', '--spec'].concat(arg));
 
-    cypressRun.stdout.on('data', (data) => {
+export const handleChildProcessSync = (childProcess, callback: (err, result?: string) => void) => {
+    childProcess.stdout.on('data', (data) => {
         // eslint-disable-next-line no-console
         console.log(`stdout: ${data}`);
     });
 
-    cypressRun.stderr.on('data', (data) => {
+    childProcess.stderr.on('data', (data) => {
         // eslint-disable-next-line no-console
         console.log(`stderr: ${data}`);
     });
 
-    cypressRun.on('error', (error) => {
+    childProcess.on('error', (error) => {
         // eslint-disable-next-line no-console
         console.log(`error: ${error.message}`);
     });
 
-    cypressRun.on('close', (code) => {
+    childProcess.on('close', (code) => {
         // eslint-disable-next-line no-console
         console.log(`child process exited with code ${code}`);
         if (code) {
@@ -44,7 +43,14 @@ export const execBinSync = (files: string[], binPath: string, callback: (err, re
     });
 };
 
-export const execBin = promisify(execBinSync);
+export const handleChildProcess = promisify(handleChildProcessSync);
 
-export const runCypressTests = (threadsWithFiles: string[][], binPath: string) =>
-    threadsWithFiles.map((testFiles) => execBin(testFiles, binPath));
+export const execBin = async (files: string[], binPath: string) => {
+    const arg = files.join(',');
+    const cypressRun = createChildProcess(binPath, arg);
+    const result = await handleChildProcess(cypressRun);
+    return result;
+};
+
+export const runCypressTests = async (threadsWithFiles: string[][], binPath: string) =>
+    Promise.all(threadsWithFiles.map((testFiles) => execBin(testFiles, binPath)));
