@@ -1,5 +1,5 @@
-import { splitFilesToThreads, enhanceFilePath } from './helpers';
-
+import { promisify } from 'util';
+import { splitFilesToThreads, enhanceFilePath, execBin } from './helpers';
 
 describe('helpers', () => {
     test('splitFilesToThreads', () => {
@@ -21,4 +21,15 @@ describe('helpers', () => {
         expect(enhancedFiles).toEqual(['cypress/integration/1.js', 'cypress/integration/2.js']);
         expect(enhancedFiles).toHaveLength(2);
     });
+
+    /* test('enhanceFilePath', async () => {
+        const asyncExecBin = promisify(execBin);
+        const lenght = await asyncExecBin(['1', '2']);
+        expect(lenght).toEqual(2);
+        try {
+            const lenght2 = await asyncExecBin(['1', '2', '3']);
+        } catch(e) {
+            expect(e.message).toEqual('ulala');
+        }
+    }); */
 });
