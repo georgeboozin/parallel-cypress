@@ -17,7 +17,7 @@ export class MySpawn extends EventEmitter {
                 this.push(null);
                 setTimeout(() => {
                     self.emit('close', code);
-                }, 100)
+                }, 100);
             },
         });
 
@@ -28,7 +28,6 @@ export class MySpawn extends EventEmitter {
         });
     }
 }
-
 
 export const spawn = () => new MySpawn(0);
 

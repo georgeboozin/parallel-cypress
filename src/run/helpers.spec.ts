@@ -49,8 +49,13 @@ describe('helpers', () => {
     });
 
     test('runCypressTests', async () => {
-        const result = await runCypressTests([['1.js', '2.js'],['3.js', '4.js']], '/bin/bash');
+        const result = await runCypressTests(
+            [
+                ['1.js', '2.js'],
+                ['3.js', '4.js'],
+            ],
+            '/bin/bash'
+        );
         expect(result).toEqual(['success!', 'success!']);
-
     });
 });
