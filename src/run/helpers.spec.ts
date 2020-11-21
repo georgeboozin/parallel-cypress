@@ -29,7 +29,7 @@ describe('helpers', () => {
         try {
             const childProcess = new MySpawn(0);
             const value = await handleChildProcess(childProcess, 'thread-1.log');
-            expect(value).toEqual('success!');
+            expect(value).toEqual('Success');
             fs.unlinkSync('thread-1.log');
         } catch (e) {
             expect(e.message).toEqual('test not pass');
@@ -41,14 +41,14 @@ describe('helpers', () => {
             const childProcess = new MySpawn(1);
             await handleChildProcess(childProcess, 'thread-1.log');
         } catch (e) {
-            expect(e.message).toEqual('test not pass');
+            expect(e.message).toEqual('Tests failed, see logs thread-1.log');
             fs.unlinkSync('thread-1.log');
         }
     });
 
     test('execBin', async () => {
         const result = await execBin({ files: ['1.js', '2.js'], binPath: '/bin/bash', outputLogDir: '.', index: 0 });
-        expect(result).toEqual('success!');
+        expect(result).toEqual('Success');
         fs.unlinkSync('thread-1.log');
     });
 
@@ -61,7 +61,7 @@ describe('helpers', () => {
             binPath: '/bin/bash',
             outputLogDir: '.',
         });
-        expect(result).toEqual(['success!', 'success!']);
+        expect(result).toEqual(['Success', 'Success']);
         fs.unlinkSync('thread-1.log');
         fs.unlinkSync('thread-2.log');
     });

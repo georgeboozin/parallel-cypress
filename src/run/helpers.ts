@@ -38,9 +38,9 @@ export const handleChildProcessSync = (childProcess, logFile: string, callback: 
         // eslint-disable-next-line no-console
         console.log(`${name} exited with code ${code}`);
         if (code) {
-            callback(new Error('test not pass'));
+            callback(new Error(`Tests failed, see logs ${logFile}`));
         } else {
-            callback(null, 'success!');
+            callback(null, 'Success');
         }
     });
 };
