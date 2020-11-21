@@ -2,7 +2,7 @@
   "extends": "@boozingeorge/config/typescript/tsconfig",
   "typeRoots": ["./typings"],
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "lib"],
+  "exclude": ["node_modules", "lib", "**/*.spec.*"],
   "compilerOptions":{
     "module": "CommonJS",
     "sourceMap": false,
