@@ -6,7 +6,8 @@ module.exports = {
             'allowModules': [],
             'resolvePaths': ['/path/to/a/modules/directory'],
             'tryExtensions': ['.js', '.ts', '.json', '.node']
-        }]
+        }],
+        'import/prefer-default-export': 0,
     },
     ignorePatterns: ['**/*.d.ts'],
 };

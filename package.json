@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/boozingeorge/parallel-cypress#readme",
   "dependencies": {
+    "glob": "^7.1.6",
     "yargs": "^16.1.1"
   },
   "devDependencies": {

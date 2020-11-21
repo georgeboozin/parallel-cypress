@@ -1,5 +1,5 @@
 import yargs from 'yargs';
-import { handle, options } from './run';
+import { handler, options } from './run';
 
 yargs
     .command(
@@ -8,9 +8,11 @@ yargs
         options,
         // (argv: { threads: number; dir: string }) => {
         (argv: any) => {
-            handle({
+            console.log(argv);
+            handler({
                 dir: argv.dir,
                 threads: argv.threads,
+                binPath: argv.binPath,
             });
         }
     )
