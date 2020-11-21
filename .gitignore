@@ -18,3 +18,4 @@ jest.json
 lib
 cypress
 cypress.json
+parallel-cypress

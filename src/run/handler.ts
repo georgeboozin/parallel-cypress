@@ -1,15 +1,16 @@
 import fs from 'fs';
 import glob from 'glob';
-import { splitFilesToThreads, runCypressTests } from './helpers';
+import { splitFilesToThreads, runCypressTests, createOutputLogDir } from './helpers';
 
 interface Attributes {
     threads: number;
     dir: string;
     binPath: string;
+    outputLogDir: string;
 }
 
 export const handler = (attrs: Attributes) => {
-    const { threads: numberThreads, dir, binPath } = attrs;
+    const { threads: numberThreads, dir, binPath, outputLogDir } = attrs;
     if (!fs.existsSync(dir)) {
         // eslint-disable-next-line no-console
         console.error('Incorrect dir path');
@@ -31,7 +32,8 @@ export const handler = (attrs: Attributes) => {
         console.log(threadsWithFiles);
 
         try {
-            await runCypressTests(threadsWithFiles, binPath);
+            createOutputLogDir(outputLogDir);
+            await runCypressTests({ threadsWithFiles, binPath, outputLogDir });
             // eslint-disable-next-line no-console
             console.log('GOOD!');
         } catch (e) {

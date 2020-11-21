@@ -24,6 +24,12 @@ export const options = (yargs) => {
         default: 'node_modules/.bin/cypress',
     });
 
+    yargs.option('output-log-dir', {
+        description: 'path to output log dir',
+        type: 'string',
+        default: 'parallel-cypress',
+    });
+
     yargs.demandOption(['dir'], 'Please provide dir argument to run tests');
 
     return yargs;

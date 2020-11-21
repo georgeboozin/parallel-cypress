@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { MySpawn } from './__mocks__/child_process';
 import { splitFilesToThreads, enhanceFilePath, handleChildProcess, execBin, runCypressTests } from './helpers';
 
@@ -27,8 +28,9 @@ describe('helpers', () => {
     test('handleChildProcess exit 0', async () => {
         try {
             const childProcess = new MySpawn(0);
-            const value = await handleChildProcess(childProcess);
+            const value = await handleChildProcess(childProcess, 'thread-1.log');
             expect(value).toEqual('success!');
+            fs.unlinkSync('thread-1.log');
         } catch (e) {
             expect(e.message).toEqual('test not pass');
         }
@@ -37,25 +39,30 @@ describe('helpers', () => {
     test('handleChildProcess exit 1', async () => {
         try {
             const childProcess = new MySpawn(1);
-            await handleChildProcess(childProcess);
+            await handleChildProcess(childProcess, 'thread-1.log');
         } catch (e) {
             expect(e.message).toEqual('test not pass');
+            fs.unlinkSync('thread-1.log');
         }
     });
 
     test('execBin', async () => {
-        const result = await execBin(['1.js', '2.js'], '/bib/bash');
+        const result = await execBin({ files: ['1.js', '2.js'], binPath: '/bin/bash', outputLogDir: '.', index: 0 });
         expect(result).toEqual('success!');
+        fs.unlinkSync('thread-1.log');
     });
 
     test('runCypressTests', async () => {
-        const result = await runCypressTests(
-            [
+        const result = await runCypressTests({
+            threadsWithFiles: [
                 ['1.js', '2.js'],
                 ['3.js', '4.js'],
             ],
-            '/bin/bash'
-        );
+            binPath: '/bin/bash',
+            outputLogDir: '.',
+        });
         expect(result).toEqual(['success!', 'success!']);
+        fs.unlinkSync('thread-1.log');
+        fs.unlinkSync('thread-2.log');
     });
 });

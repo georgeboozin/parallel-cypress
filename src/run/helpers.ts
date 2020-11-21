@@ -1,5 +1,7 @@
 import { spawn } from 'child_process';
 import { promisify } from 'util';
+import fs from 'fs';
+import path from 'path';
 
 export const splitFilesToThreads = (files: string[], numberThreads: number) =>
     files.reduce((acc, cur, index) => {
@@ -16,11 +18,10 @@ export const enhanceFilePath = (files: string[], dir: string) => files.map((file
 
 export const createChildProcess = (binPath, arg) => spawn(binPath, ['run', '--spec'].concat(arg));
 
-export const handleChildProcessSync = (childProcess, callback: (err, result?: string) => void) => {
-    childProcess.stdout.on('data', (data) => {
-        // eslint-disable-next-line no-console
-        console.log(`stdout: ${data}`);
-    });
+export const handleChildProcessSync = (childProcess, logFile: string, callback: (err, result?: string) => void) => {
+    const outputFile = fs.createWriteStream(logFile);
+
+    childProcess.stdout.pipe(outputFile);
 
     childProcess.stderr.on('data', (data) => {
         // eslint-disable-next-line no-console
@@ -33,8 +34,9 @@ export const handleChildProcessSync = (childProcess, callback: (err, result?: st
     });
 
     childProcess.on('close', (code) => {
+        const { name } = path.parse(logFile);
         // eslint-disable-next-line no-console
-        console.log(`child process exited with code ${code}`);
+        console.log(`${name} exited with code ${code}`);
         if (code) {
             callback(new Error('test not pass'));
         } else {
@@ -45,12 +47,32 @@ export const handleChildProcessSync = (childProcess, callback: (err, result?: st
 
 export const handleChildProcess = promisify(handleChildProcessSync);
 
-export const execBin = async (files: string[], binPath: string) => {
+interface ExecBin {
+    files: string[];
+    binPath: string;
+    outputLogDir: string;
+    index: number;
+}
+
+export const execBin = async ({ files, binPath, outputLogDir, index }: ExecBin) => {
     const arg = files.join(',');
+    const logFile = path.join(outputLogDir, `thread-${index + 1}.log`);
     const cypressRun = createChildProcess(binPath, arg);
-    const result = await handleChildProcess(cypressRun);
+    const result = await handleChildProcess(cypressRun, logFile);
     return result;
 };
 
-export const runCypressTests = async (threadsWithFiles: string[][], binPath: string) =>
-    Promise.all(threadsWithFiles.map((testFiles) => execBin(testFiles, binPath)));
+export const createOutputLogDir = (outputLog) => {
+    if (!fs.existsSync(outputLog)) {
+        fs.mkdirSync(outputLog, { recursive: true });
+    }
+};
+
+interface RunCypressTests {
+    threadsWithFiles: string[][];
+    binPath: string;
+    outputLogDir: string;
+}
+
+export const runCypressTests = async ({ threadsWithFiles, binPath, outputLogDir }: RunCypressTests) =>
+    Promise.all(threadsWithFiles.map((files, index) => execBin({ files, binPath, outputLogDir, index })));
