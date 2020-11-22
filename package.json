@@ -10,6 +10,9 @@
   "bin": {
     "parallel-cypress": "cli.js"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "rm -rf cjs && tsc --project tsconfig.json --watch",
     "build": "rm -rf cjs && tsc --project tsconfig.json",
