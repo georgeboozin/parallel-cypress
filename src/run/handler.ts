@@ -18,7 +18,7 @@ export const handler = async (attrs: Attributes) => {
     const { threads: numberThreads, dir, binPath, outputLogDir } = attrs;
     try {
         if (!fs.existsSync(dir)) {
-            throw new Error('Incorrect dir path');
+            throw new Error(chalk.redBright('Incorrect dir path'));
         }
 
         const files = await globAsync(`${dir}/**/*.*`);
