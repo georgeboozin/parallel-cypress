@@ -2,6 +2,9 @@ import { spawn } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs';
 import path from 'path';
+import chalk from 'chalk';
+
+chalk.red();
 
 export const splitFilesToThreads = (files: string[], numberThreads: number) =>
     files.reduce((acc, cur, index) => {
@@ -20,25 +23,25 @@ export const createChildProcess = (binPath, arg) => spawn(binPath, ['run', '--sp
 
 export const handleChildProcessSync = (childProcess, logFile: string, callback: (err, result?: string) => void) => {
     const outputFile = fs.createWriteStream(logFile);
+    const { name } = path.parse(logFile);
 
     childProcess.stdout.pipe(outputFile);
 
     childProcess.stderr.on('data', (data) => {
         // eslint-disable-next-line no-console
-        console.log(`stderr: ${data}`);
+        console.log(`${chalk.blue(name)} ${chalk.magenta('stderr')}: ${chalk.redBright(data)}`);
     });
 
     childProcess.on('error', (error) => {
         // eslint-disable-next-line no-console
-        console.log(`error: ${error.message}`);
+        console.log(`${chalk.blue(name)} ${chalk.magenta('(error)')}: ${chalk.redBright(error.message)}`);
     });
 
     childProcess.on('close', (code) => {
-        const { name } = path.parse(logFile);
         // eslint-disable-next-line no-console
-        console.log(`${name} exited with code ${code}`);
+        console.log(`${chalk.blue(name)} exited with code ${chalk.bold(code)}`);
         if (code) {
-            callback(new Error(`Tests failed, see logs ${logFile}`));
+            callback(new Error(`${chalk.redBright('Tests failed, see logs')} ${chalk.blue.underline(logFile)}`));
         } else {
             callback(null, 'Success');
         }
@@ -56,8 +59,11 @@ interface ExecBin {
 
 export const execBin = async ({ files, binPath, outputLogDir, index }: ExecBin) => {
     const arg = files.join(',');
-    const logFile = path.join(outputLogDir, `thread-${index + 1}.log`);
+    const name = `thread-${index + 1}`;
+    const logFile = path.join(outputLogDir, `${name}.log`);
     const cypressRun = createChildProcess(binPath, arg);
+    // eslint-disable-next-line no-console
+    console.log(`${chalk.blue(name)} started with tests: ${chalk.yellow(arg)}`);
     const result = await handleChildProcess(cypressRun, logFile);
     return result;
 };

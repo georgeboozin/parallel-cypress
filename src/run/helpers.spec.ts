@@ -1,4 +1,5 @@
 import fs from 'fs';
+import chalk from 'chalk';
 import { MySpawn } from './__mocks__/child_process';
 import { splitFilesToThreads, enhanceFilePath, handleChildProcess, execBin, runCypressTests } from './helpers';
 
@@ -41,7 +42,9 @@ describe('helpers', () => {
             const childProcess = new MySpawn(1);
             await handleChildProcess(childProcess, 'thread-1.log');
         } catch (e) {
-            expect(e.message).toEqual('Tests failed, see logs thread-1.log');
+            expect(e.message).toEqual(
+                `${chalk.redBright('Tests failed, see logs')} ${chalk.blue.underline('thread-1.log')}`
+            );
             fs.unlinkSync('thread-1.log');
         }
     });
