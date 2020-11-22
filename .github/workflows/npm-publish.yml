@@ -27,9 +27,10 @@ jobs:
         run: npm test
       - name: "Run lint"
         run: npm run lint
-      - name: "Set git creds"
-        run: "git config --global user.email 'you@example.com'"
-        run: "git config --global user.name 'System Bump'"
+      - name: Commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
       - name: "Increase path version"
         run: "npm version patch"
         env:
@@ -37,5 +38,9 @@ jobs:
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-      - name: "Update branch"
-        run: "git push --follow-tags"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+          tags: true
