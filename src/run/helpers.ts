@@ -27,10 +27,7 @@ export const handleChildProcessSync = (childProcess, logFile: string, callback: 
 
     childProcess.stdout.pipe(outputFile);
 
-    childProcess.stderr.on('data', (data) => {
-        // eslint-disable-next-line no-console
-        console.log(`${chalk.blue(name)} ${chalk.magenta('(stderr)')}: ${chalk.redBright(data)}`);
-    });
+    childProcess.stderr.pipe(outputFile);
 
     childProcess.on('error', (error) => {
         // eslint-disable-next-line no-console
