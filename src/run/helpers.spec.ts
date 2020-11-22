@@ -50,7 +50,7 @@ describe('helpers', () => {
     });
 
     test('execBin', async () => {
-        const result = await execBin({ files: ['1.js', '2.js'], binPath: '/bin/bash', outputLogDir: '.', index: 0 });
+        const result = await execBin({ files: ['1.js', '2.js'], binPath: '/bin/bash', outputLogDir: './', index: 0 });
         expect(result).toEqual('Success');
         fs.unlinkSync('thread-1.log');
     });
@@ -62,7 +62,7 @@ describe('helpers', () => {
                 ['3.js', '4.js'],
             ],
             binPath: '/bin/bash',
-            outputLogDir: '.',
+            outputLogDir: './',
         });
         expect(result).toEqual(['Success', 'Success']);
         fs.unlinkSync('thread-1.log');

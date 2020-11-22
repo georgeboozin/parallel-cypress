@@ -1,6 +1,7 @@
 import fs from 'fs';
 import glob from 'glob';
 import { promisify } from 'util';
+import prettyHrtime from 'pretty-hrtime';
 import chalk from 'chalk';
 import { splitFilesToThreads, runCypressTests, createOutputLogDir } from './helpers';
 
@@ -23,9 +24,11 @@ export const handler = async (attrs: Attributes) => {
         const files = await globAsync(`${dir}/**/*.*`);
         const threadsWithFiles = splitFilesToThreads(files, numberThreads);
         createOutputLogDir(outputLogDir);
+        const start = process.hrtime();
         await runCypressTests({ threadsWithFiles, binPath, outputLogDir });
+        const end = process.hrtime(start);
         // eslint-disable-next-line no-console
-        console.log(chalk.green('Tests passed'));
+        console.log(chalk.green(`Tests passed, time: ${prettyHrtime(end)}`));
     } catch (e) {
         // eslint-disable-next-line no-console
         console.error(e.message);
