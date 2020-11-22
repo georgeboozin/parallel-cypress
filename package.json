@@ -2,16 +2,17 @@
   "name": "@boozingeorge/parallel-cypress",
   "version": "0.0.1",
   "description": "run cypress test",
-  "main": "lib/index.js",
+  "main": "cli.js",
   "files": [
-    "lib"
+    "cjs",
+    "cli.js"
   ],
   "bin": {
-    "parallel-cypress": "lib/index.js"
+    "parallel-cypress": "cli.js"
   },
   "scripts": {
-    "dev": "rm -rf lib && tsc --project tsconfig.json --watch",
-    "build": "rm -rf lib && tsc --project tsconfig.json",
+    "dev": "rm -rf cjs && tsc --project tsconfig.json --watch",
+    "build": "rm -rf cjs && tsc --project tsconfig.json",
     "test": "jest",
     "test:coverage": "jest --collect-coverage",
     "lint": "eslint ./src --quiet --ext .js,.ts,.tsx --config ./.eslintrc.js"

@@ -15,7 +15,7 @@ esm/
 __diff_output__
 *test-report.xml
 jest.json
-lib
+cjs
 cypress
 cypress.json
 parallel-cypress

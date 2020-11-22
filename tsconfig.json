@@ -2,10 +2,10 @@
   "extends": "@boozingeorge/config/typescript/tsconfig",
   "typeRoots": ["./typings"],
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "lib", "**/*.spec.*", "**/__mocks__/**.*"],
+  "exclude": ["node_modules", "cjs", "**/*.spec.*", "**/__mocks__/**.*"],
   "compilerOptions":{
     "module": "CommonJS",
     "sourceMap": false,
-    "outDir": "lib"
+    "outDir": "cjs"
   }
 }
