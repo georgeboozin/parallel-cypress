@@ -27,6 +27,9 @@ jobs:
         run: npm test
       - name: "Run lint"
         run: npm run lint
+      - name: "Set git creds"
+        run: "git config --global user.email 'you@example.com'"
+        run: "git config --global user.name 'System Bump'"
       - name: "Increase path version"
         run: "npm version patch"
         env:
