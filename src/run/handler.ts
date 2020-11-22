@@ -1,6 +1,7 @@
 import fs from 'fs';
 import glob from 'glob';
 import { promisify } from 'util';
+import chalk from 'chalk';
 import { splitFilesToThreads, runCypressTests, createOutputLogDir } from './helpers';
 
 const globAsync = promisify(glob);
@@ -24,7 +25,7 @@ export const handler = async (attrs: Attributes) => {
         createOutputLogDir(outputLogDir);
         await runCypressTests({ threadsWithFiles, binPath, outputLogDir });
         // eslint-disable-next-line no-console
-        console.log('Tests passed');
+        console.log(chalk.green('Tests passed'));
     } catch (e) {
         // eslint-disable-next-line no-console
         console.error(e.message);

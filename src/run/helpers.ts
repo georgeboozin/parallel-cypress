@@ -29,7 +29,7 @@ export const handleChildProcessSync = (childProcess, logFile: string, callback: 
 
     childProcess.stderr.on('data', (data) => {
         // eslint-disable-next-line no-console
-        console.log(`${chalk.blue(name)} ${chalk.magenta('stderr')}: ${chalk.redBright(data)}`);
+        console.log(`${chalk.blue(name)} ${chalk.magenta('(stderr)')}: ${chalk.redBright(data)}`);
     });
 
     childProcess.on('error', (error) => {
@@ -38,8 +38,9 @@ export const handleChildProcessSync = (childProcess, logFile: string, callback: 
     });
 
     childProcess.on('close', (code) => {
+        const exitCode = code ? chalk.redBright(code) : chalk.green(code);
         // eslint-disable-next-line no-console
-        console.log(`${chalk.blue(name)} exited with code ${chalk.bold(code)}`);
+        console.log(`${chalk.blue(name)} exited with code ${exitCode}`);
         if (code) {
             callback(new Error(`${chalk.redBright('Tests failed, see logs')} ${chalk.blue.underline(logFile)}`));
         } else {
