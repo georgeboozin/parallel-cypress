@@ -14,8 +14,6 @@ jobs:
     steps:
       - name: "Checkout source code"
         uses: actions/checkout@v2
-        with:
-          persist-credentials: false
       - name: "Setup Node.js"
         uses: actions/setup-node@v1
         with:
@@ -37,12 +35,12 @@ jobs:
         run: "npm version patch"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+      # - run: npm publish
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{secrets.npm_token}}
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          # github_token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
+          # github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
