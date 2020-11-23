@@ -1,6 +1,6 @@
 {
   "name": "@boozingeorge/parallel-cypress",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "run cypress test",
   "main": "cli.js",
   "files": [
