@@ -13,10 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.head_commit.author.username != 'actions-user'
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
       - name: "Checkout source code"
         uses: actions/checkout@v2
         with:
@@ -34,20 +30,18 @@ jobs:
         run: npm test
       - name: "Run lint"
         run: npm run lint
-      - name: Commit files
+      - name: "Increase patch version and commit"
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-      - name: "Increase path version"
-        run: "npm version patch"
+          npm version patch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # - run: npm publish
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
-          # github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
