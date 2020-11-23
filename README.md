@@ -32,7 +32,7 @@ Commands:
 ```
 
 ```
-run
+run  Run cypress tests
 
 Options:
       --version         Show version number                            [boolean]
