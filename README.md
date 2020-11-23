@@ -1,5 +1,3 @@
-# parallel-cypress
-
 ## Description
 parallel-cypress is cli tool, which helps you run cypress test on multi-process
 
