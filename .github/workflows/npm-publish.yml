@@ -11,7 +11,7 @@ jobs:
   check-and-publish:
     name: "Quality Check Master and Publish"
     runs-on: ubuntu-latest
-    if: github.actor != 'actions-user'
+    if: github.event.head_commit.author.username != 'actions-user'
     steps:
       - name: Dump GitHub context
         env:
