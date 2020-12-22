@@ -3,7 +3,7 @@ import chalk from 'chalk';
 // eslint-disable-next-line @typescript-eslint/camelcase
 import * as child_process from 'child_process';
 import { MySpawn } from './__mocks__/child_process';
-import { splitFilesToThreads, enhanceFilePath, handleChildProcess, execBin, runCypressTests } from './helpers';
+import { splitFilesToThreads, enhanceFilePath, handleChildProcess, execBin, runCypressTests, getOpt } from './helpers';
 
 jest.mock('child_process');
 
@@ -58,7 +58,7 @@ describe('helpers', () => {
             binPath: '/bin/bash',
             outputLogDir: './',
             index: 0,
-            getopt: ['--env', 'allure=true'],
+            options: ['--env', 'allure=true'],
         });
         expect(result).toEqual('Success');
         expect(spySpawn).toHaveBeenCalledTimes(1);
@@ -67,14 +67,14 @@ describe('helpers', () => {
         spySpawn.mockRestore();
     });
 
-    test('execBin empty getopt', async () => {
+    test('execBin empty options', async () => {
         const spySpawn = jest.spyOn(child_process, 'spawn');
         const result = await execBin({
             files: ['1.js', '2.js'],
             binPath: '/bin/bash',
             outputLogDir: './',
             index: 0,
-            getopt: [],
+            options: [],
         });
         expect(spySpawn).toHaveBeenCalledTimes(1);
         expect(spySpawn).toBeCalledWith('/bin/bash', ['run', '--spec', '1.js,2.js']);
@@ -92,7 +92,7 @@ describe('helpers', () => {
             ],
             binPath: '/bin/bash',
             outputLogDir: './',
-            getopt: ['--env', 'allure=true'],
+            options: ['--env', 'allure=true'],
         });
         expect(result).toEqual(['Success', 'Success']);
         expect(spySpawn).toHaveBeenCalledTimes(2);
@@ -113,5 +113,12 @@ describe('helpers', () => {
         fs.unlinkSync('thread-1.log');
         fs.unlinkSync('thread-2.log');
         spySpawn.mockRestore();
+    });
+
+    test('getOpt', async () => {
+        expect(getOpt([])).toEqual([]);
+        expect(getOpt(['run'])).toEqual([]);
+        expect(getOpt(['run', '--env'])).toEqual(['--env']);
+        expect(getOpt(['run', '--env', 'allure=true'])).toEqual(['--env', 'allure=true']);
     });
 });

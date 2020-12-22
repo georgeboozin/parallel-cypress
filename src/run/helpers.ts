@@ -4,8 +4,6 @@ import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
 
-chalk.red();
-
 export const splitFilesToThreads = (files: string[], numberThreads: number) =>
     files.reduce((acc, cur, index) => {
         const idx = index % numberThreads;
@@ -19,7 +17,7 @@ export const splitFilesToThreads = (files: string[], numberThreads: number) =>
 
 export const enhanceFilePath = (files: string[], dir: string) => files.map((file: string) => `${dir}/${file}`);
 
-export const createChildProcess = (binPath, args: string[]) => spawn(binPath, ['run', '--spec'].concat(args));
+export const createChildProcess = (binPath, options: string[]) => spawn(binPath, ['run', '--spec'].concat(options));
 
 export const handleChildProcessSync = (childProcess, logFile: string, callback: (err, result?: string) => void) => {
     const outputFile = fs.createWriteStream(logFile);
@@ -53,17 +51,17 @@ interface ExecBin {
     binPath: string;
     outputLogDir: string;
     index: number;
-    getopt: string[];
+    options: string[];
 }
 
-export const execBin = async ({ files, binPath, outputLogDir, index, getopt }: ExecBin) => {
-    const arg = files.join(',');
+export const execBin = async ({ files, binPath, outputLogDir, index, options }: ExecBin) => {
+    const filesOption = files.join(',');
     const name = `thread-${index + 1}`;
     const logFile = path.join(outputLogDir, `${name}.log`);
-    const args = [arg].concat(getopt);
-    const cypressRun = createChildProcess(binPath, args);
+    const finalOptions = [filesOption].concat(options);
+    const cypressRun = createChildProcess(binPath, finalOptions);
     // eslint-disable-next-line no-console
-    console.log(`${chalk.blue(name)} started with tests: ${chalk.yellow(arg)}`);
+    console.log(`${chalk.blue(name)} started with tests: ${chalk.yellow(filesOption)}`);
     const result = await handleChildProcess(cypressRun, logFile);
     return result;
 };
@@ -78,8 +76,16 @@ interface RunCypressTests {
     threadsWithFiles: string[][];
     binPath: string;
     outputLogDir: string;
-    getopt: string[];
+    options: string[];
 }
 
-export const runCypressTests = async ({ threadsWithFiles, binPath, outputLogDir, getopt }: RunCypressTests) =>
-    Promise.all(threadsWithFiles.map((files, index) => execBin({ files, binPath, outputLogDir, index, getopt })));
+export const runCypressTests = async ({ threadsWithFiles, binPath, outputLogDir, options }: RunCypressTests) =>
+    Promise.all(threadsWithFiles.map((files, index) => execBin({ files, binPath, outputLogDir, index, options })));
+
+export const getOpt = (options: string[]) => {
+    if (Array.isArray(options)) {
+        return options.slice(1);
+    }
+
+    return [];
+};
