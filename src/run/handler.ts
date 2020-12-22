@@ -8,7 +8,7 @@ import { splitFilesToThreads, runCypressTests, createOutputLogDir } from './help
 const globAsync = promisify(glob);
 
 interface Attributes {
-    _: [],
+    _: string[];
     threads: number;
     dir: string;
     binPath: string;
