@@ -8,7 +8,8 @@
     "cli.js"
   ],
   "bin": {
-    "parallel-cypress": "cli.js"
+    "parallel-cypress": "cli.js",
+    "@boozingeorge/parallel-cypress": "cli.js"
   },
   "publishConfig": {
     "access": "public"
