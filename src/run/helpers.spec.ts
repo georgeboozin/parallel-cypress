@@ -1,5 +1,7 @@
 import fs from 'fs';
 import chalk from 'chalk';
+// eslint-disable-next-line @typescript-eslint/camelcase
+import * as child_process from 'child_process';
 import { MySpawn } from './__mocks__/child_process';
 import { splitFilesToThreads, enhanceFilePath, handleChildProcess, execBin, runCypressTests } from './helpers';
 
@@ -50,6 +52,7 @@ describe('helpers', () => {
     });
 
     test('execBin', async () => {
+        const spySpawn = jest.spyOn(child_process, 'spawn');
         const result = await execBin({
             files: ['1.js', '2.js'],
             binPath: '/bin/bash',
@@ -58,10 +61,14 @@ describe('helpers', () => {
             getopt: ['--env', 'allure=true'],
         });
         expect(result).toEqual('Success');
+        expect(spySpawn).toHaveBeenCalledTimes(1);
+        expect(spySpawn).toBeCalledWith('/bin/bash', ['run', '--spec', '1.js,2.js', '--env', 'allure=true']);
         fs.unlinkSync('thread-1.log');
+        spySpawn.mockRestore();
     });
 
     test('execBin empty getopt', async () => {
+        const spySpawn = jest.spyOn(child_process, 'spawn');
         const result = await execBin({
             files: ['1.js', '2.js'],
             binPath: '/bin/bash',
@@ -69,11 +76,15 @@ describe('helpers', () => {
             index: 0,
             getopt: [],
         });
+        expect(spySpawn).toHaveBeenCalledTimes(1);
+        expect(spySpawn).toBeCalledWith('/bin/bash', ['run', '--spec', '1.js,2.js']);
         expect(result).toEqual('Success');
         fs.unlinkSync('thread-1.log');
+        spySpawn.mockRestore();
     });
 
     test('runCypressTests', async () => {
+        const spySpawn = jest.spyOn(child_process, 'spawn');
         const result = await runCypressTests({
             threadsWithFiles: [
                 ['1.js', '2.js'],
@@ -84,7 +95,23 @@ describe('helpers', () => {
             getopt: ['--env', 'allure=true'],
         });
         expect(result).toEqual(['Success', 'Success']);
+        expect(spySpawn).toHaveBeenCalledTimes(2);
+        expect(spySpawn).toHaveBeenNthCalledWith(1, '/bin/bash', [
+            'run',
+            '--spec',
+            '1.js,2.js',
+            '--env',
+            'allure=true',
+        ]);
+        expect(spySpawn).toHaveBeenNthCalledWith(2, '/bin/bash', [
+            'run',
+            '--spec',
+            '3.js,4.js',
+            '--env',
+            'allure=true',
+        ]);
         fs.unlinkSync('thread-1.log');
         fs.unlinkSync('thread-2.log');
+        spySpawn.mockRestore();
     });
 });

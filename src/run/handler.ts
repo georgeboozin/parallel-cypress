@@ -17,8 +17,9 @@ interface Attributes {
 
 export const handler = async (attrs: Attributes) => {
     const { threads: numberThreads, dir, binPath, outputLogDir, _ } = attrs;
-    const getopt = _.slice(1); // remove 'run' command from attrs list
     try {
+        const getopt = _.slice(1); // remove 'run' command from attrs list
+
         if (!fs.existsSync(dir)) {
             throw new Error(chalk.redBright('Incorrect dir path'));
         }
