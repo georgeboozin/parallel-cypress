@@ -50,7 +50,25 @@ describe('helpers', () => {
     });
 
     test('execBin', async () => {
-        const result = await execBin({ files: ['1.js', '2.js'], binPath: '/bin/bash', outputLogDir: './', index: 0 });
+        const result = await execBin({
+            files: ['1.js', '2.js'],
+            binPath: '/bin/bash',
+            outputLogDir: './',
+            index: 0,
+            getopt: ['--env', 'allure=true'],
+        });
+        expect(result).toEqual('Success');
+        fs.unlinkSync('thread-1.log');
+    });
+
+    test('execBin empty getopt', async () => {
+        const result = await execBin({
+            files: ['1.js', '2.js'],
+            binPath: '/bin/bash',
+            outputLogDir: './',
+            index: 0,
+            getopt: [],
+        });
         expect(result).toEqual('Success');
         fs.unlinkSync('thread-1.log');
     });
@@ -63,6 +81,7 @@ describe('helpers', () => {
             ],
             binPath: '/bin/bash',
             outputLogDir: './',
+            getopt: ['--env', 'allure=true'],
         });
         expect(result).toEqual(['Success', 'Success']);
         fs.unlinkSync('thread-1.log');

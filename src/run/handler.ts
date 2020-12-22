@@ -8,6 +8,7 @@ import { splitFilesToThreads, runCypressTests, createOutputLogDir } from './help
 const globAsync = promisify(glob);
 
 interface Attributes {
+    _: [],
     threads: number;
     dir: string;
     binPath: string;
@@ -15,7 +16,8 @@ interface Attributes {
 }
 
 export const handler = async (attrs: Attributes) => {
-    const { threads: numberThreads, dir, binPath, outputLogDir } = attrs;
+    const { threads: numberThreads, dir, binPath, outputLogDir, _ } = attrs;
+    const getopt = _.slice(1); // remove 'run' command from attrs list
     try {
         if (!fs.existsSync(dir)) {
             throw new Error(chalk.redBright('Incorrect dir path'));
@@ -25,7 +27,7 @@ export const handler = async (attrs: Attributes) => {
         const threadsWithFiles = splitFilesToThreads(files, numberThreads);
         createOutputLogDir(outputLogDir);
         const start = process.hrtime();
-        await runCypressTests({ threadsWithFiles, binPath, outputLogDir });
+        await runCypressTests({ threadsWithFiles, binPath, outputLogDir, getopt });
         const end = process.hrtime(start);
         // eslint-disable-next-line no-console
         console.log(chalk.green(`Tests passed, time: ${prettyHrtime(end)}`));
