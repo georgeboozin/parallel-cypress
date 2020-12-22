@@ -9,9 +9,9 @@ npm i @boozingeorge/parallel-cypress -D
 
 ## Usage
 
-### bash:
+### npx
 ```bash
-./node_modules/.bin/parallel-cypress run -d cypress/integration -t 2
+npx @boozingeorge/parallel-cypress run -d cypress/integration -t 2
 ```
 
 ### npm script:
@@ -22,6 +22,11 @@ npm i @boozingeorge/parallel-cypress -D
     }
 }
 
+```
+
+### bash:
+```bash
+./node_modules/.bin/parallel-cypress run -d cypress/integration -t 2
 ```
 
 ## Comands and options
@@ -44,4 +49,11 @@ Options:
                                  [string] [default: "node_modules/.bin/cypress"]
       --output-log-dir  path to output log dir
                                           [string] [default: "parallel-cypress"]
+```
+
+## Pass arguments
+you can use custom arguments when executing tool. The special option `--` is used by [getopt](https://unix.stackexchange.com/questions/147143/when-and-how-was-the-double-dash-introduced-as-an-end-of-options-delimiter) to delimit the end of the options. Tool will pass all the arguments after the `--` directly to cypress bin:
+
+```bash
+npx @boozingeorge/parallel-cypress run -d cypress/integration -t 2 -- --env allure=true
 ```
