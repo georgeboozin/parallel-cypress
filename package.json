@@ -1,7 +1,13 @@
 {
   "name": "@boozingeorge/parallel-cypress",
   "version": "0.0.18",
-  "description": "run cypress test",
+  "description": "cli tool for run cypress test on the multi-process mode",
+  "keywords": [
+    "cypress",
+    "multi-process",
+    "parallel",
+    "cli"
+  ],
   "main": "cli.js",
   "files": [
     "cjs",
