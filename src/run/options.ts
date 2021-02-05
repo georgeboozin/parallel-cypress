@@ -27,7 +27,7 @@ export const options = (yargs) => {
     yargs.option('output-log-dir', {
         description: 'path to output log dir',
         type: 'string',
-        default: 'parallel-cypress',
+        default: 'multiprocess-cypress',
     });
 
     yargs.demandOption(['dir'], 'Please provide dir argument to run tests');

@@ -18,4 +18,4 @@ jest.json
 cjs
 cypress
 cypress.json
-parallel-cypress
+multiprocess-cypress
