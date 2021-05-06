@@ -16,6 +16,7 @@ export const options = (yargs) => {
         description: 'file test extension',
         alias: 'e',
         type: 'string',
+        default: 'js',
     });
 
     yargs.option('bin-path', {

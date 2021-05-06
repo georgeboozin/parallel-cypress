@@ -13,10 +13,11 @@ interface Options {
     dir: string;
     binPath: string;
     outputLogDir: string;
+    extension: string;
 }
 
 export const handler = async (options: Options) => {
-    const { threads: numberThreads, dir, binPath, outputLogDir, _ } = options;
+    const { threads: numberThreads, dir, binPath, outputLogDir, extension, _ } = options;
     try {
         const cypressOptions = getOpt(_); // remove 'run' command from options list
 
@@ -24,7 +25,7 @@ export const handler = async (options: Options) => {
             throw new Error(chalk.redBright('Incorrect dir path'));
         }
 
-        const files = await globAsync(`${dir}/**/*.*`);
+        const files = await globAsync(`${dir}/**/*.${extension}`);
         const threadsWithFiles = splitFilesToThreads(files, numberThreads);
         createOutputLogDir(outputLogDir);
         const start = process.hrtime();
