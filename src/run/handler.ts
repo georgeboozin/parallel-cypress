@@ -14,10 +14,11 @@ interface Options {
     binPath: string;
     outputLogDir: string;
     extension: string;
+    ignoreThreadException: boolean;
 }
 
 export const handler = async (options: Options) => {
-    const { threads: numberThreads, dir, binPath, outputLogDir, extension, _ } = options;
+    const { threads: numberThreads, dir, binPath, outputLogDir, extension, ignoreThreadException, _ } = options;
     try {
         const cypressOptions = getOpt(_); // remove 'run' command from options list
 
@@ -29,7 +30,13 @@ export const handler = async (options: Options) => {
         const threadsWithFiles = splitFilesToThreads(files, numberThreads);
         createOutputLogDir(outputLogDir);
         const start = process.hrtime();
-        await runCypressTests({ threadsWithFiles, binPath, outputLogDir, options: cypressOptions });
+        await runCypressTests({
+            threadsWithFiles,
+            binPath,
+            outputLogDir,
+            ignoreThreadException,
+            options: cypressOptions,
+        });
         const end = process.hrtime(start);
         // eslint-disable-next-line no-console
         console.log(chalk.green(`Tests passed, time: ${prettyHrtime(end)}`));

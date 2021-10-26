@@ -40,15 +40,17 @@ Commands:
 run  Run cypress tests
 
 Options:
-      --version         Show version number                            [boolean]
-  -h, --help            Show help                                      [boolean]
-  -t, --threads         number threads to run tests        [number] [default: 1]
-  -d, --dir             path directory to run tests          [string] [required]
-  -e, --extension       file test extension                             [string]
-      --bin-path        path to cypress binary
-                                 [string] [default: "node_modules/.bin/cypress"]
-      --output-log-dir  path to output log dir
-                                          [string] [default: "parallel-cypress"]
+      --version                 Show version number                            [boolean]
+  -h, --help                    Show help                                      [boolean]
+  -t, --threads                 number threads to run tests        [number] [default: 1]
+  -d, --dir                     path directory to run tests          [string] [required]
+  -e, --extension               file test extension                             [string]
+      --bin-path                path to cypress binary
+                                         [string] [default: "node_modules/.bin/cypress"]
+      --output-log-dir          path to output log dir
+                                                  [string] [default: "parallel-cypress"]
+  -i, --ignore-thread-exception ignore thread exceptions for correct Allure report
+                                                                                [boolean]
 ```
 
 ## Pass arguments
