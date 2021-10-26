@@ -31,6 +31,13 @@ export const options = (yargs) => {
         default: 'parallel-cypress',
     });
 
+    yargs.option('ignore-thread-exception', {
+        description: 'ignore thread exception',
+        alias: 'i',
+        type: 'boolean',
+        default: false,
+    });
+
     yargs.demandOption(['dir'], 'Please provide dir argument to run tests');
 
     return yargs;

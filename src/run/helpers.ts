@@ -19,7 +19,12 @@ export const enhanceFilePath = (files: string[], dir: string) => files.map((file
 
 export const createChildProcess = (binPath, options: string[]) => spawn(binPath, ['run', '--spec'].concat(options));
 
-export const handleChildProcessSync = (childProcess, logFile: string, callback: (err, result?: string) => void) => {
+export const handleChildProcessSync = (
+    childProcess,
+    logFile: string,
+    ignoreThreadException: boolean,
+    callback: (err, result?: string) => void
+) => {
     const outputFile = fs.createWriteStream(logFile);
     const { name } = path.parse(logFile);
 
@@ -37,7 +42,13 @@ export const handleChildProcessSync = (childProcess, logFile: string, callback: 
         // eslint-disable-next-line no-console
         console.log(`${chalk.blue(name)} exited with code ${exitCode}`);
         if (code) {
-            callback(new Error(`${chalk.redBright('Tests failed, see logs')} ${chalk.blue.underline(logFile)}`));
+            if (ignoreThreadException) {
+                // eslint-disable-next-line no-console
+                console.error(`${chalk.redBright('Tests failed, see logs')} ${chalk.blue.underline(logFile)}`);
+                callback(null, 'Tests failed');
+            } else {
+                callback(new Error(`${chalk.redBright('Tests failed, see logs')} ${chalk.blue.underline(logFile)}`));
+            }
         } else {
             callback(null, 'Success');
         }
@@ -52,9 +63,10 @@ interface ExecBin {
     outputLogDir: string;
     index: number;
     options: string[];
+    ignoreThreadException: boolean;
 }
 
-export const execBin = async ({ files, binPath, outputLogDir, index, options }: ExecBin) => {
+export const execBin = async ({ files, binPath, outputLogDir, index, options, ignoreThreadException }: ExecBin) => {
     const filesOption = files.join(',');
     const name = `thread-${index + 1}`;
     const logFile = path.join(outputLogDir, `${name}.log`);
@@ -62,8 +74,7 @@ export const execBin = async ({ files, binPath, outputLogDir, index, options }: 
     const cypressRun = createChildProcess(binPath, finalOptions);
     // eslint-disable-next-line no-console
     console.log(`${chalk.blue(name)} started with tests: ${chalk.yellow(filesOption)}`);
-    const result = await handleChildProcess(cypressRun, logFile);
-    return result;
+    return handleChildProcess(cypressRun, logFile, ignoreThreadException);
 };
 
 export const createOutputLogDir = (outputLog) => {
@@ -76,11 +87,22 @@ interface RunCypressTests {
     threadsWithFiles: string[][];
     binPath: string;
     outputLogDir: string;
+    ignoreThreadException: boolean;
     options: string[];
 }
 
-export const runCypressTests = async ({ threadsWithFiles, binPath, outputLogDir, options }: RunCypressTests) =>
-    Promise.all(threadsWithFiles.map((files, index) => execBin({ files, binPath, outputLogDir, index, options })));
+export const runCypressTests = async ({
+    threadsWithFiles,
+    binPath,
+    outputLogDir,
+    ignoreThreadException,
+    options,
+}: RunCypressTests) =>
+    Promise.all(
+        threadsWithFiles.map((files, index) =>
+            execBin({ files, binPath, outputLogDir, index, options, ignoreThreadException })
+        )
+    );
 
 export const getOpt = (options: string[]) => {
     if (Array.isArray(options)) {

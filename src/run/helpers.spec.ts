@@ -31,7 +31,7 @@ describe('helpers', () => {
     test('handleChildProcess exit 0', async () => {
         try {
             const childProcess = new MySpawn(0);
-            const value = await handleChildProcess(childProcess, 'thread-1.log');
+            const value = await handleChildProcess(childProcess, 'thread-1.log', false);
             expect(value).toEqual('Success');
             fs.unlinkSync('thread-1.log');
         } catch (e) {
@@ -42,12 +42,24 @@ describe('helpers', () => {
     test('handleChildProcess exit 1', async () => {
         try {
             const childProcess = new MySpawn(1);
-            await handleChildProcess(childProcess, 'thread-1.log');
+            await handleChildProcess(childProcess, 'thread-1.log', false);
         } catch (e) {
             expect(e.message).toEqual(
                 `${chalk.redBright('Tests failed, see logs')} ${chalk.blue.underline('thread-1.log')}`
             );
             fs.unlinkSync('thread-1.log');
+        }
+    });
+
+    test('handleChildProcess exit 1 ignore-thread-exception', async () => {
+        try {
+            const childProcess = new MySpawn(1);
+            await handleChildProcess(childProcess, 'thread-1.log', true);
+            fs.unlinkSync('thread-1.log');
+        } catch (e) {
+            expect(e.message).not.toEqual(
+                `${chalk.redBright('Tests failed, see logs')} ${chalk.blue.underline('thread-1.log')}`
+            );
         }
     });
 
@@ -59,6 +71,7 @@ describe('helpers', () => {
             outputLogDir: './',
             index: 0,
             options: ['--env', 'allure=true'],
+            ignoreThreadException: false,
         });
         expect(result).toEqual('Success');
         expect(spySpawn).toHaveBeenCalledTimes(1);
@@ -75,6 +88,7 @@ describe('helpers', () => {
             outputLogDir: './',
             index: 0,
             options: [],
+            ignoreThreadException: false,
         });
         expect(spySpawn).toHaveBeenCalledTimes(1);
         expect(spySpawn).toBeCalledWith('/bin/bash', ['run', '--spec', '1.js,2.js']);
@@ -93,6 +107,7 @@ describe('helpers', () => {
             binPath: '/bin/bash',
             outputLogDir: './',
             options: ['--env', 'allure=true'],
+            ignoreThreadException: false,
         });
         expect(result).toEqual(['Success', 'Success']);
         expect(spySpawn).toHaveBeenCalledTimes(2);
